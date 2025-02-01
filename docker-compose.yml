@@ -1,0 +1,64 @@
+version: '3.9'
+services:
+  flowise-db:
+    image: postgres:16-alpine
+    hostname: flowise-db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./flowise-db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowiseai
+    hostname: flowise
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:${PORT}
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./flowiseai:/root/.flowise
+    environment:
+      DEBUG: 'false'
+      PORT: ${PORT}
+      FLOWISE_USERNAME: ${FLOWISE_USERNAME}
+      FLOWISE_PASSWORD: ${FLOWISE_PASSWORD}
+      APIKEY_PATH: /root/.flowise
+      SECRETKEY_PATH: /root/.flowise
+      LOG_LEVEL: info
+      LOG_PATH: /root/.flowise/logs
+      DATABASE_TYPE: ${DATABASE_TYPE}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_HOST: flowise-db
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+#    restart: on-failure:5
+    depends_on:
+      - ollama
+      - flowise-db
+    entrypoint: /bin/sh -c "sleep 3; flowise start"
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+
+volumes:
+  flowise-db-data:
+  ollama_data:
