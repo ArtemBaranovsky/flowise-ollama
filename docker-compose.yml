@@ -44,20 +44,23 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-#    restart: on-failure:5
     depends_on:
       - ollama
       - flowise-db
     entrypoint: /bin/sh -c "sleep 3; flowise start"
 
   ollama:
-    image: ollama/ollama
+    build:
+      context: ./ollama-models
+      dockerfile: Dockerfile
     container_name: ollama
-    restart: unless-stopped
+#    restart: unless-stopped
     volumes:
       - ollama_data:/root/.ollama
     ports:
       - "11434:11434"
+    environment:
+      HF_TOKEN: ${HF_TOKEN}
 
 volumes:
   flowise-db-data:
