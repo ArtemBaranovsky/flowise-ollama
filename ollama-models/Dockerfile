@@ -1,6 +1,9 @@
 # Use the official Python image as the base image
 FROM ollama/ollama
 
+ENV OLLAMA_ORIGINS=*
+ENV OLLAMA_HOST=0.0.0.0
+
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y curl
 

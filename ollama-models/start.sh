@@ -1,7 +1,13 @@
 #!/bin/bash
-# Pull the Ollama model
-ollama pull llama3.2:1b
-# Run the Ollama model
-ollama run llama3.2:1b &
-# Serve the Ollama model
+
+MODEL_NAME="llama3.2:1b"
+
+if ! ollama list | grep -q "$MODEL_NAME"; then
+  echo "Model is not found. Loading..."
+  ollama pull "$MODEL_NAME"
+else
+  echo "Model is already loaded."
+fi
+
+ollama run "$MODEL_NAME" &
 ollama serve
