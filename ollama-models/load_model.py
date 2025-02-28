@@ -1,3 +1,4 @@
+# load_model.py
 import os
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -6,8 +7,7 @@ hf_token = os.environ.get("HF_TOKEN")
 if hf_token is None:
     raise ValueError("Hugging Face token is not set")
 
-model_name = "meta-llama/Llama-3.2-1B"
-
+model_name = os.environ.get("MODEL_NAME")
 model = AutoModelForCausalLM.from_pretrained(model_name)
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 

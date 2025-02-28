@@ -1,13 +1,15 @@
 #!/bin/bash
-
-MODEL_NAME="llama3.2:1b"
+# start.sh
 
 if ! ollama list | grep -q "$MODEL_NAME"; then
   echo "Model is not found. Loading..."
-  ollama pull "$MODEL_NAME"
+  HUGGING_FACE_HUB_TOKEN=${HF_TOKEN} ollama pull "$MODEL_NAME"
 else
   echo "Model is already loaded."
 fi
 
-ollama run "$MODEL_NAME" &
-ollama serve
+ollama serve &
+sleep 10
+ollama run "$MODEL_NAME"
+
+tail -f /dev/null

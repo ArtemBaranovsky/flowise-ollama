@@ -20,6 +20,9 @@ COPY load_model.py /app/load_model.py
 ARG HF_TOKEN
 ENV HF_TOKEN=${HF_TOKEN}
 
+ARG MODEL_NAME
+ENV MODEL_NAME=${MODEL_NAME}
+
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
 
